@@ -1,4 +1,0 @@
-ms|225|1065|1|4.38|None
-ms|1152|193|1|4.38|None
-kb|rikelmy|4.38|null
-msr|1289|363|4.38|None
