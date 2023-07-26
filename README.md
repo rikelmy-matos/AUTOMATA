@@ -3,8 +3,6 @@
 
 # This project saves your inputs (mouse and keyboard text) and saves them in a.txt file, so you can read that file and perform the action repeatedly...
 
-# It is currently saving only single entries (1 left mouse click, 1 right mouse click and texts)
-
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # HOW TO USE:
