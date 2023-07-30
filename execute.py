@@ -1,6 +1,4 @@
-import mouse as ms
 import pyautogui
-from datetime import datetime
 from tkinter import filedialog
 
 #function that execute your file

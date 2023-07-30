@@ -1,6 +1,4 @@
 import os
-import mouse as ms
-from datetime import datetime
 from tkinter import filedialog
 
 
