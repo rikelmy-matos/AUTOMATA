@@ -11,7 +11,7 @@
 
 3 - Write the name of the file you want to create -> click on (Create file button) -> the file will be created in "autopy folder"
 
-4 - Set the clicks by coordinate and speed using the sliders on the right side (clicks = min 1 max 3 clicks) | (speed = min 0.05 max 10s)
+4 - Set the clicks by coordinate and speed using the sliders on the right side (clicks = min 1 max 3 clicks) | (speed = min 0.2 max 10s)
 
 5 - Click on (Choose file) -> choose the file you created -> a file will be created with the path of the file inside the "choosepy folder" -> this folder is for control
 
