@@ -1,11 +1,11 @@
-import os
 import mouse as ms
 import customtkinter
-import pyautogui
-from datetime import datetime
 from PIL import Image
-from tkinter import filedialog
-from time import sleep
+from choose import choose_archive
+from delete import delete_archive
+from execute import autobot
+from hotkeys import funct_select_all, funct_copy, funct_paste
+
 
 ########################################################## CONFIG ####################################################################################
 #pip install -r requirements.txt
@@ -32,16 +32,15 @@ app.resizable(False, False)
 #Title
 app.title("Automata")
 
-#log_varible control
-text_log = ""
+#theme and see variable control
+button_mode = True
+button_visible = True
 #font
 font_tuple = ("Roboto", 20, "bold")
 font_text = ("Roboto", 13, "normal")
-########################################################## FUNCTIONS ##################################################################################
-#function that write the user log(inputs)
-def logs(text_value):
-    log_label.insert("0.0", text_value)
 
+
+########################################################## FUNCTIONS ##################################################################################
 #function that create an archive
 def create_archive():
 
@@ -49,83 +48,11 @@ def create_archive():
         archive_name = entry_name_file.get()
         if archive_name != "":
             FileName = str("autopy/" + archive_name + ".txt")
-            with open(FileName,"w"):
-                data_e_hora_atuais = datetime.now()
-                hora_em_texto = data_e_hora_atuais.strftime('%H:%M:%S')
-                text_log = f'{hora_em_texto} - "created: ", {archive_name}\n'
-                logs(text_log)
+            with open(FileName,"w") as archive:
+                archive.close()
             
         else:
             print("Write the name!")
-    except Exception:
-        print(Exception)
-
-#function that choose and save an archive path
-def choose_archive():
-
-    filename = filedialog.askopenfilename()
-    if filename !='':
-        with open("controlpy/choose.txt", 'w') as archive:
-            archive.write(filename)
-            filename = filename.split("/")
-            filename = filename[-1]
-            data_e_hora_atuais = datetime.now()
-            hora_em_texto = data_e_hora_atuais.strftime('%H:%M:%S')
-            text_log = f'{hora_em_texto} - "selected: ", {filename}\n'
-            logs(text_log)
-    else:
-        print("No file selected.")
-
-#function that delete an file
-def delete_archive():
-
-# Display the dialog for browsing files.
-    filename = filedialog.askopenfilename(
-    filetypes=(
-        ("Text files", "*.txt"),
-        ("Python Files", ("*.py", "*.pyx")),
-        ("All Files", "*.*")
-    )
-)
-    # Remove the file
-    # 'file.txt'
-
-    if filename !='':
-        os.remove(filename)
-        filename = filename.split("/")
-        filename = filename[-1]
-        data_e_hora_atuais = datetime.now()
-        hora_em_texto = data_e_hora_atuais.strftime('%H:%M:%S')
-        text_log = f'{hora_em_texto} - "deleted: ", {filename}\n'
-        logs(text_log)
-    else:
-        print("No file selected.")
-
-#function that saves the clicks
-def slider_click():
-    current_value = int(slider_clicks.get())
-    try:
-        with open("controlpy/clicks.txt", 'w') as archive:
-            archive.write(f'{str(current_value)}|{None}')
-            data_e_hora_atuais = datetime.now()
-            hora_em_texto = data_e_hora_atuais.strftime('%H:%M:%S')
-            text_log = f'{hora_em_texto} - "clicks : ", {current_value}\n'
-            logs(text_log)
-    except Exception:
-        print(Exception)
-
-#function that saves the clicks
-def slider_vel():
-    current_value = float(slider_velocity.get())
-    current_value = f'{current_value:.2f}'
-    try:
-        with open("controlpy/vel.txt", 'w') as archive:
-            archive.write(f'{current_value}|{None}')
-            data_e_hora_atuais = datetime.now()
-            hora_em_texto = data_e_hora_atuais.strftime('%H:%M:%S')
-            text_log = f'{hora_em_texto} - "velocity : ", {current_value}\n'
-            logs(text_log)
-
     except Exception:
         print(Exception)
 
@@ -157,10 +84,6 @@ def get_mouse_left():
 
             with open(f'{name_archive}', 'a') as archive:
                 archive.write(f'{"ms"}|{x}|{y}|{clicks}|{vel}|{None}\n')
-                data_e_hora_atuais = datetime.now()
-                hora_em_texto = data_e_hora_atuais.strftime('%H:%M:%S')
-                text_log = f'{hora_em_texto} - "mouse(left): ", set{x,y}\n'
-                logs(text_log)
                 archive.close()
         except Exception:
             print(Exception)
@@ -192,11 +115,8 @@ def get_mouse_right():
                 vel = vel[0]
             with open(f'{name_archive}', 'a') as archive:
                 archive.write(f'{"msr"}|{x}|{y}|{vel}|{None}\n')
-                data_e_hora_atuais = datetime.now()
-                hora_em_texto = data_e_hora_atuais.strftime('%H:%M:%S')
-                text_log = f'{hora_em_texto} - "mouse(right): ", set{x,y}\n'
-                logs(text_log)
                 archive.close()
+
         except Exception:
             print(Exception)
     except Exception:
@@ -222,11 +142,7 @@ def receive_text():
                     vel = vel[0]
                 with open(f'{name_archive}', 'a') as archive:
                     archive.write(f'{"kb"}|{"".join(text_box)}|{vel}|{None}'+"\n")
-                    data_e_hora_atuais = datetime.now()
-                    hora_em_texto = data_e_hora_atuais.strftime('%H:%M:%S')
-                    text_log = f'{hora_em_texto} - "keyboard: ", {text_box}\n'
-                    logs(text_log)
-                archive.close()
+                    archive.close()
                 
             except Exception:
                 print(Exception)
@@ -235,148 +151,7 @@ def receive_text():
     except Exception:
                 print(Exception)
 
-#function that save the hotkey ctrl + a
-def funct_select_all():
-
-    try:
-        with open(f'controlpy/choose.txt', 'r') as archive:
-            name_archive = archive.read()
-            archive.close()
-    except Exception:
-        print(Exception)
-
-    try:
-        with open("controlpy/vel.txt", 'r') as archive:
-            vel = archive.read()
-            vel = vel.split("|")
-            vel = vel[0]
-        with open(f'{name_archive}', 'a') as archive:
-            archive.write(f'{"hk"}|{"ctrl"}|{"a"}|{vel}|{None}'+"\n")
-            data_e_hora_atuais = datetime.now()
-            hora_em_texto = data_e_hora_atuais.strftime('%H:%M:%S')
-            text_log = f'{hora_em_texto} - "hotkey: ", "ctrl + a"\n'
-            logs(text_log)
-            archive.close()
-                
-    except Exception:
-        print(Exception)
-
-#function that save the hotkey ctrl + c
-def funct_copy():
-
-    try:
-        with open(f'controlpy/choose.txt', 'r') as archive:
-            name_archive = archive.read()
-            archive.close()
-    except Exception:
-        print(Exception)
-
-    try:
-        with open("controlpy/vel.txt", 'r') as archive:
-            vel = archive.read()
-            vel = vel.split("|")
-            vel = vel[0]
-        with open(f'{name_archive}', 'a') as archive:
-            archive.write(f'{"hk"}|{"ctrl"}|{"c"}|{vel}|{None}'+"\n")
-            data_e_hora_atuais = datetime.now()
-            hora_em_texto = data_e_hora_atuais.strftime('%H:%M:%S')
-            text_log = f'{hora_em_texto} - "hotkey: ", "ctrl + c"\n'
-            logs(text_log)
-            archive.close()
-                
-    except Exception:
-        print(Exception)
-
-#function that save the hotkey ctrl + v
-def funct_paste():
-
-    try:
-        with open(f'controlpy/choose.txt', 'r') as archive:
-            name_archive = archive.read()
-            archive.close()
-    except Exception:
-        print(Exception)
-
-    try:
-        with open("controlpy/vel.txt", 'r') as archive:
-            vel = archive.read()
-            vel = vel.split("|")
-            vel = vel[0]
-        with open(f'{name_archive}', 'a') as archive:
-            archive.write(f'{"hk"}|{"ctrl"}|{"v"}|{vel}|{None}'+"\n")
-            data_e_hora_atuais = datetime.now()
-            hora_em_texto = data_e_hora_atuais.strftime('%H:%M:%S')
-            text_log = f'{hora_em_texto} - "hotkey: ", "ctrl + v"\n'
-            logs(text_log)
-            archive.close()
-                
-    except Exception:
-        print(Exception)
-
-#function that execute your file
-def autobot():
-
-    # Display the dialog for browsing files.
-    filename = filedialog.askopenfilename(
-    filetypes=(
-        ("Text files", "*.txt"),
-        ("Python Files", ("*.py", "*.pyx")),
-        ("All Files", "*.*")
-    )
-)
-    if filename:
-
-        filename_location = filename.split("/")
-        filename_location = filename_location[-1]
-        data_e_hora_atuais = datetime.now()
-        hora_em_texto = data_e_hora_atuais.strftime('%H:%M:%S')
-        text_log = f'{hora_em_texto} - "executed: ", {filename_location}"\n'
-        logs(text_log)
-
-        try:
-            with open(filename, 'r') as archive:
-                txt = archive.readlines()
-                for line in txt:
-                    line = line.split('|')
-                    if line[0] == 'kb':
-                        rec_text = line[1]
-                        vel = float(line[2])
-                        pyautogui.doubleClick(duration=vel)
-                        pyautogui.hotkey('delete')
-                        pyautogui.hotkey('ctrl', 'a')
-                        pyautogui.hotkey('delete')
-                        pyautogui.write(rec_text)
-                        
-                    if line[0] == 'ms':
-                        var = 0
-                        x = line[1]
-                        y = line[2]
-                        clicks = line[3]
-                        vel = float(line[4])
-                        while(var < int(clicks)):
-                            pyautogui.click(int(x), int(y), duration=vel)
-                            var+=1
-
-                    if line[0] == 'msr':
-                        x = line[1]
-                        y = line[2]
-                        vel = float(line[3])
-                        pyautogui.rightClick(int(x), int(y), duration=vel)
-
-                    
-                    if line[0] == 'hk':
-                        hotkey_1 = line[1]
-                        hotkey_2 = line[2]
-                        vel = float(line[3])
-                        pyautogui.hotkey(hotkey_1, hotkey_2, duration=vel)
-                    
-        except Exception:
-            print("Erro aqui: final")
-            print(Exception)
-    else:
-        print("No file selected.")
-
-button_mode = True
+#function that change the theme
 def customize():
 
     global button_mode
@@ -391,7 +166,7 @@ def customize():
         customtkinter.set_appearance_mode("light")
         button_mode = True
 
-button_visible = True
+#function see and unsee(stay open or not)
 def see():
 
     global button_visible
@@ -407,6 +182,27 @@ def see():
         app.call('wm', 'attributes', '.', '-topmost', False)
         app.after_idle(app.call, 'wm', 'attributes', '.', '-topmost', False)
         button_visible = True
+
+
+#function that saves the clicks
+def slider_click():
+    current_value = int(slider_clicks.get())
+    try:
+        with open("controlpy/clicks.txt", 'w') as archive:
+            archive.write(f'{str(current_value)}|{None}')
+    except Exception:
+        print(Exception)
+
+#function that saves the clicks
+def slider_vel():
+    current_value = float(slider_velocity.get())
+    current_value = f'{current_value:.2f}'
+    try:
+        with open("controlpy/vel.txt", 'w') as archive:
+            archive.write(f'{current_value}|{None}')
+
+    except Exception:
+        print(Exception)
 
 ########################################################## FRAMES #################################################################################
 
@@ -510,7 +306,7 @@ slider_clicks.pack(pady=6, padx=3)
 #slider vel and button that save the input
 vel_slider_frame = customtkinter.CTkFrame(frame_config, fg_color='transparent')
 vel_slider_frame.pack(pady=2)
-slider_velocity= customtkinter.CTkSlider(master=vel_slider_frame, number_of_steps=200, from_=0.05, to=10)
+slider_velocity= customtkinter.CTkSlider(master=vel_slider_frame, number_of_steps=50, from_=0.2, to=10)
 button_slider_vel = customtkinter.CTkButton(master=vel_slider_frame, width=100,  text=" Save Vel.", command=slider_vel)
 slider_velocity.set(0.05)
 button_slider_vel.pack(pady=2, padx=3, side='right', anchor='e', expand=True)
@@ -527,17 +323,11 @@ hotkey_select_all.pack(pady=4, padx=5, side="left")
 hotkey_copy.pack(pady=4, padx=5, side="left")
 hotkey_paste.pack(pady=4, padx=5, side="left")
 
-
-#frame user logs
-log_text_frame = customtkinter.CTkFrame(frame_config, fg_color='transparent')
-log_text_frame.pack(pady=2)
-log_text = customtkinter.CTkLabel(master=log_text_frame, text="log")
-log_text.pack()
-log_frame = customtkinter.CTkFrame(frame_config, fg_color='transparent')
-log_frame.pack(pady=4)
-log_label = customtkinter.CTkTextbox(master=log_frame, border_color="black", width=250, height=250, font=font_text)
-log_label.insert("0.0", text_log)
-log_label.pack(pady=5)
+#Update new functions
+update_frame = customtkinter.CTkFrame(frame_config, fg_color='transparent')
+update_frame.pack(pady=2)
+update_text = customtkinter.CTkLabel(master=update_frame, text="update soon...")
+update_text.pack(pady=4, padx=5)
 
 
 
